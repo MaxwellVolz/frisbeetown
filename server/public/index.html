@@ -8,11 +8,17 @@
 </head>
 
 <body>
-    <h1>WebRTC Signaling Test</h1>
-    <!-- <button id="offerBtn">Offer</button> -->
-    <button id="connectBtn">Connect</button>
-    <input id="message" />
-    <button id="sendBtn">Send</button>
+    <div>
+        <h1>WebRTC Signaling Test</h1>
+        <!-- <button id="offerBtn">Offer</button> -->
+        <button id="connectBtn">Connect</button>
+        <input id="message" />
+        <button id="sendBtn">Send</button>
+    </div>
+
+    <div>
+        <ul id="messages"></ul>
+    </div>
 </body>
 <script>
     const socket = io("http://localhost:3000/signaling");
@@ -28,6 +34,7 @@
             console.log("Data channel opened");
         };
         dataChannel.onmessage = (event) => {
+            console.log("youve got mail bitch")
             const messages = document.getElementById("messages");
             const li = document.createElement("li");
             console.log(messages);
@@ -64,6 +71,15 @@
         console.log(`Received ICE candidate: ${JSON.stringify(candidate)}`);
         await peerConnection.addIceCandidate(candidate);
     });
+
+    // Handle incoming messages
+    socket.on('message', (message) => {
+        const messagesContainer = document.getElementById('messages');
+        const messageElement = document.createElement('li');
+        messageElement.innerText = message;
+        messagesContainer.appendChild(messageElement);
+    });
+
 
     // Handle Connect button click
     const connectBtn = document.getElementById("connectBtn");
