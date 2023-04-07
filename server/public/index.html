@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebRTC Signaling Test</title>
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+
+<body>
+    <h1>WebRTC Signaling Test</h1>
+    <!-- <button id="offerBtn">Offer</button> -->
+    <button id="connectBtn">Connect</button>
+    <input id="message" />
+    <button id="sendBtn">Send</button>
+</body>
+<script>
+    const socket = io("http://localhost:3000/signaling");
+    let peerConnection = null;
+    let dataChannel = null;
+
+    // Initialize peerConnection object
+    function initPeerConnection() {
+        console.log("ayo...initPeerConnection")
+        peerConnection = new RTCPeerConnection();
+        dataChannel = peerConnection.createDataChannel("frisbee-town");
+        dataChannel.onopen = () => {
+            console.log("Data channel opened");
+        };
+        dataChannel.onmessage = (event) => {
+            const messages = document.getElementById("messages");
+            const li = document.createElement("li");
+            console.log(messages);
+            li.textContent = event.data;
+            messages.appendChild(li);
+        };
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                console.log(`Sending ICE candidate: ${JSON.stringify(event.candidate)}`);
+                socket.emit("candidate", event.candidate);
+            }
+        };
+    }
+
+    initPeerConnection();
+
+    // Handle incoming WebRTC offers
+    socket.on("offer", async (offer) => {
+        console.log(`Received offer: ${JSON.stringify(offer)}`);
+        await peerConnection.setRemoteDescription(offer);
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        socket.emit("answer", answer);
+    });
+
+    // Handle incoming WebRTC answers
+    socket.on("answer", async (answer) => {
+        console.log(`Received answer: ${JSON.stringify(answer)}`);
+        await peerConnection.setRemoteDescription(answer);
+    });
+
+    // Handle incoming ICE candidates
+    socket.on("candidate", async (candidate) => {
+        console.log(`Received ICE candidate: ${JSON.stringify(candidate)}`);
+        await peerConnection.addIceCandidate(candidate);
+    });
+
+    // Handle Connect button click
+    const connectBtn = document.getElementById("connectBtn");
+    connectBtn.addEventListener("click", async () => {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        socket.emit("offer", offer);
+        console.log(`Sending offer: ${JSON.stringify(offer)}`);
+    });
+
+    // Handle Send button click
+    const sendBtn = document.getElementById("sendBtn");
+    sendBtn.addEventListener("click", () => {
+        const message = document.getElementById("message").value;
+        dataChannel.send(message);
+        console.log(`Sending message: ${message}`);
+    });
+
+</script>
+
+</html>
