@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "webrtc server for frisbeetown",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "server",
+    "webrtc"
+  ],
+  "author": "Maxwell Volz",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-pre-gyp": "^0.17.0",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "webrtc-adapter": "^8.2.2",
+    "wrtc": "^0.4.7"
+  }
+}
