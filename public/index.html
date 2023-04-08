@@ -3,13 +3,14 @@
 
 <head>
     <title>WebRTC Signaling Test</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="/libs/socket.io.js"></script>
+    <link rel="stylesheet" href="css/style.css">
 
 </head>
 
 <body>
     <div>
-        <h1>WebRTC Signaling Test</h1>
+        <h1>WebRTC Test</h1>
         <!-- <button id="offerBtn">Offer</button> -->
         <button id="connectBtn">Connect</button>
         <input id="message" />
@@ -32,14 +33,28 @@
         dataChannel = peerConnection.createDataChannel("frisbee-town");
         dataChannel.onopen = () => {
             console.log("Data channel opened");
+            // Send messages using the data channel
+            const sendBtn = document.getElementById("sendBtn");
+            sendBtn.addEventListener("click", () => {
+                const message = document.getElementById("message").value;
+                dataChannel.send(message);
+                console.log(`Sending message: ${message}`);
+                // Add the message to the list of sent messages
+                const messagesContainer = document.getElementById("messages");
+                const messageElement = document.createElement("li");
+                messageElement.innerText = `[Me]: ${message}`;
+                messageElement.classList.add("from-me");
+                messagesContainer.appendChild(messageElement);
+            });
         };
         dataChannel.onmessage = (event) => {
-            console.log("youve got mail bitch")
-            const messages = document.getElementById("messages");
-            const li = document.createElement("li");
-            console.log(messages);
-            li.textContent = event.data;
-            messages.appendChild(li);
+            console.log(`Received message: ${event.data}`);
+            // Add the message to the list of received messages
+            const messagesContainer = document.getElementById("messages");
+            const messageElement = document.createElement("li");
+            messageElement.innerText = `[Other]: ${event.data}`;
+            messageElement.classList.add("from-others");
+            messagesContainer.appendChild(messageElement);
         };
         peerConnection.onicecandidate = (event) => {
             if (event.candidate) {
@@ -76,9 +91,11 @@
     socket.on('message', (message) => {
         const messagesContainer = document.getElementById('messages');
         const messageElement = document.createElement('li');
-        messageElement.innerText = message;
+        messageElement.innerText = `[Other]: ${message}`;
+        messageElement.classList.add('from-others');
         messagesContainer.appendChild(messageElement);
     });
+
 
 
     // Handle Connect button click
@@ -91,12 +108,12 @@
     });
 
     // Handle Send button click
-    const sendBtn = document.getElementById("sendBtn");
-    sendBtn.addEventListener("click", () => {
-        const message = document.getElementById("message").value;
-        dataChannel.send(message);
-        console.log(`Sending message: ${message}`);
-    });
+    // const sendBtn = document.getElementById("sendBtn");
+    // sendBtn.addEventListener("click", () => {
+    //     const message = document.getElementById("message").value;
+    //     dataChannel.send(message);
+    //     console.log(`Sending message: ${message}`);
+    // });
 
 </script>
 

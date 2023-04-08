@@ -4,6 +4,8 @@
   "description": "webrtc server for frisbeetown",
   "main": "server.js",
   "scripts": {
+    "start": "node ./server/server.js",
+    "watch": "nodemon ./server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -20,5 +22,10 @@
     "socket.io-client": "^4.6.1",
     "webrtc-adapter": "^8.2.2",
     "wrtc": "^0.4.7"
+  },
+  "devDependencies": {
+    "connect-livereload": "^0.6.1",
+    "livereload": "^0.9.3",
+    "nodemon": "^2.0.22"
   }
 }

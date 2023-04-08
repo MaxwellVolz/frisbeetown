@@ -5,16 +5,24 @@ const io = require("socket.io")(http);
 const cors = require("cors");
 const { RTCPeerConnection, RTCSessionDescription, RTCIceCandidate } = require("wrtc");
 
+// Serve static files from the "public" directory
+app.use(express.static("public"));
+
 // Allow requests from all origins
 app.use(cors());
 
-// Specific origins
-// app.use(cors({
-//   origin: "http://localhost:58703"
-// }));
+// Live reload
+var livereload = require("livereload");
+var connectLiveReload = require("connect-livereload");
+const liveReloadServer = livereload.createServer();
 
-// Serve static files from the "public" directory
-app.use(express.static("public"));
+liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+        liveReloadServer.refresh("/");
+    }, 100);
+});
+
+app.use(connectLiveReload());
 
 // Create a new socket.io namespace for WebRTC signaling
 const signaling = io.of("/signaling");

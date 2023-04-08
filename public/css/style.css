@@ -1,0 +1,24 @@
+#messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+}
+
+#messages li:last-child {
+    margin-bottom: 0;
+}
+
+#messages li.from-me {
+    background-color: #7fd8ff;
+}
+
+#messages li.from-others {
+    background-color: #e6e6e6;
+}
